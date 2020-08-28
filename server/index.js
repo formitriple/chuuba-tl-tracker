@@ -10,12 +10,22 @@ const returnArray = arg => {
     return Array.isArray(arg) ? arg : [arg]
 }
 
+const returnMaxURLIfExists = async url => {
+    try {
+        const maxresExists = await got(url)
+        if (maxresExists.statusCode === 200) return url
+    } catch (error) {
+       if (error.response.statusCode === 404) return null
+    }
+}
+
 // get all videos
 app.get("/api/videos", async(req, res) => {
     try {
         const videos = await pool.query(queries.getVideos)
         res.json(videos.rows)
     } catch (error) {
+        console.log(error)
         res.json(error)
     }
 })
@@ -41,8 +51,9 @@ app.post("/api/videos", async(req, res) => {
         await client.query("BEGIN") // insert #1 start
         const videoURL = `https://youtube.com/watch?v=${thumbnail_url.split("/vi/")[1].split("/")[0]}`
         const thumbnailMaxURL = thumbnail_url.replace(/hqdefault/gi, "maxresdefault")
+        const maxUrlExists = await returnMaxURLIfExists(thumbnailMaxURL)
         const vTuberPostQuery = returnArray(req.query.vtuber)
-        const insertValues = [title, thumbnail_url, thumbnailMaxURL, videoURL, vTuberPostQuery]
+        const insertValues = [title, thumbnail_url, maxUrlExists, videoURL, vTuberPostQuery]
         await client.query(queries.insertVideo, insertValues) // insert #1 end
 
         const insertedVideo = await client.query(queries.getInsertedVideo, [title]) // insert #2+ start
