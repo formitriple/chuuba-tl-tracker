@@ -52,13 +52,13 @@ app.post("/api/videos", async(req, res) => {
             const vtuberID = getVtuber.rows[0].vt_id
             await client.query(queries.insertToJoin, [insertedVideoID, vtuberID])
         }
-        await client.query("COMMIT") // insert #2+ end
+        await client.query("COMMIT") 
+        res.send(`Video '${title}' was inserted successfully!`) // insert #2+ end
     } catch (error) {
         await client.query("ROLLBACK")
         throw error
     } finally {
         client.release() // finish transaction
-        res.send(`Video '${title}' was inserted successfully!`)
     }
 })
 
