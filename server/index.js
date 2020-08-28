@@ -6,6 +6,10 @@ const pool = require("./db")
 const queries = require("./queries")
 const port = process.env.APP_PORT
 
+const returnArray = arg => {
+    return Array.isArray(arg) ? arg : [arg]
+}
+
 // get all videos
 app.get("/api/videos", async(req, res) => {
     try {
@@ -18,9 +22,10 @@ app.get("/api/videos", async(req, res) => {
 
 // get all videos from x vtuber
 app.get("/api/videos/filter", async(req, res) => {
-    const vTuberQueryArr = Array.isArray(req.query.vtuber) ? req.query.vtuber : [req.query.vtuber]
+    const vTUberFilterQuery = returnArray(req.query.vtuber)
+    // const vTuberQueryArr = Array.isArray(req.query.vtuber) ? req.query.vtuber : [req.query.vtuber]
     try {
-        const filteredVideos = await pool.query(queries.getFilteredVideos, [vTuberQueryArr, vTuberQueryArr.length])
+        const filteredVideos = await pool.query(queries.getFilteredVideos, [vTUberFilterQuery, vTUberFilterQuery.length])
         res.json(filteredVideos.rows)
     } catch (error) {
         console.log(error)
@@ -37,8 +42,9 @@ app.post("/api/videos", async(req, res) => {
         await client.query("BEGIN") // insert #1 start
         const videoURL = `https://youtube.com/watch?v=${thumbnail_url.split("/vi/")[1].split("/")[0]}`
         const thumbnailMaxURL = thumbnail_url.replace(/hqdefault/gi, "maxresdefault")
-        const vTuberQueryArr = Array.isArray(req.query.vtuber) ? req.query.vtuber : [req.query.vtuber]
-        const insertValues = [title, thumbnail_url, thumbnailMaxURL, videoURL, vTuberQueryArr]
+        // const vTuberQueryArr = Array.isArray(req.query.vtuber) ? req.query.vtuber : [req.query.vtuber]
+        const vTuberPostQuery = returnArray(req.query.vtuber)
+        const insertValues = [title, thumbnail_url, thumbnailMaxURL, videoURL, vTuberPostQuery]
         await client.query(queries.insertVideo, insertValues) // insert #1 end
 
         const insertedVideo = await client.query(queries.getInsertedVideo, [title]) // insert #2+ start
