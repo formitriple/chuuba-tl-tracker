@@ -16,6 +16,18 @@ app.get("/api/videos", async(req, res) => {
     }
 })
 
+// get all videos from x vtuber
+app.get("/api/videos/filter", async(req, res) => {
+    const vTuberQueryArr = Array.isArray(req.query.vtuber) ? req.query.vtuber : [req.query.vtuber]
+    try {
+        const filteredVideos = await pool.query(queries.getFilteredVideos, [vTuberQueryArr, vTuberQueryArr.length])
+        res.json(filteredVideos.rows)
+    } catch (error) {
+        console.log(error)
+        res.json(error)
+    }
+})
+
 // post a video to db
 app.post("/api/videos", async(req, res) => {
     const client = await pool.connect()
@@ -25,12 +37,12 @@ app.post("/api/videos", async(req, res) => {
         await client.query("BEGIN") // insert #1 start
         const videoURL = `https://youtube.com/watch?v=${thumbnail_url.split("/vi/")[1].split("/")[0]}`
         const thumbnailMaxURL = thumbnail_url.replace(/hqdefault/gi, "maxresdefault")
-        const insertValues = [title, thumbnail_url, thumbnailMaxURL, videoURL]
+        const vTuberQueryArr = Array.isArray(req.query.vtuber) ? req.query.vtuber : [req.query.vtuber]
+        const insertValues = [title, thumbnail_url, thumbnailMaxURL, videoURL, vTuberQueryArr]
         await client.query(queries.insertVideo, insertValues) // insert #1 end
 
         const insertedVideo = await client.query(queries.getInsertedVideo, [title]) // insert #2+ start
         const insertedVideoID = insertedVideo.rows[0].v_id
-        const vTuberQueryArr = Array.isArray(req.query.vtuber) ? req.query.vtuber : [req.query.vtuber]
         for (const vtuber of vTuberQueryArr) {
             const getVtuber = await client.query(queries.getVtuber, [vtuber])
             const vtuberID = getVtuber.rows[0].vt_id
