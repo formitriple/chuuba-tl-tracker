@@ -4,11 +4,11 @@ Web app that tracks translated videos of virtual Youtubers ("Vtubers", or "Chuub
 
 ### Tech
 
-*[Node.js](https://nodejs.org/en/)
-*[Express](https://github.com/expressjs/express)
-*[PostgresQL](https://www.postgresql.org)
-*[oEmbed](https://oembed.com)
-*[React](https://github.com/facebook/react/)
+* [Node.js](https://nodejs.org/en/)
+* [Express](https://github.com/expressjs/express)
+* [PostgresQL](https://www.postgresql.org)
+* [oEmbed](https://oembed.com)
+* [React](https://github.com/facebook/react/)
 
 ### Notes
 
