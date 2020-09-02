@@ -141,6 +141,16 @@ app.put("/api/videos/:id", async (req, res) => {
     }
 })
 
+app.delete("/api/videos/:id", async (req, res) => {
+    try {
+        const deleteVideo = await pool.query(queries.deleteVideo, [req.params.id])
+        res.json("video was deleted")
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+})
+
 app.listen(port, () => {
     console.log(`server started on port ${port}`)
 })
