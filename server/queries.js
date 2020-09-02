@@ -29,6 +29,12 @@ const queries = {
     getInsertedVideo: "SELECT v_id FROM video WHERE title = $1",
     insertToJoin: "INSERT INTO vid_vtuber(v_id, vt_id) VALUES($1, $2)",
     getVtuber: "SELECT * FROM vtuber WHERE name = $1",
+    getSelectedVideo: "SELECT * FROM video WHERE v_id = $1",
+    updateSelectedVideo: "UPDATE video SET title = $1, thumbnail_url_hq = $2, thumbnail_url_max = $3, video_url = $4 WHERE v_id = $5",
+    updateSelectedVideoIncludes: "UPDATE video SET video_includes = $1 WHERE v_id = $2",
+    removeFromJoin: "DELETE FROM vid_vtuber WHERE v_id = $1 AND vt_id = $2",
+    getVideoToUpdate: "SELECT * FROM video WHERE v_id = $1",
+    deleteVideo: "DELETE FROM video WHERE v_id = $1"
 }
 
 module.exports = queries;
